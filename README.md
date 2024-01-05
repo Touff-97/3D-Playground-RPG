@@ -8,3 +8,4 @@ A playground of all things 3D Multiplayer RPG.
 4. Programming Patterns over Spaghetti
 5. Camera, character and control
 6. Extensive compatibility
+7. Custom Node icons
