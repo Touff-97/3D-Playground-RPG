@@ -11,5 +11,10 @@ config_version=5
 [application]
 
 config/name="3D Playground RPG"
+run/main_scene="res://src/scenes/multiplayer_controller.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameManager="*res://src/managers/game_manager.gd"

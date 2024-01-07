@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=3 uid="uid://cv8odgogakdvf"]
+
+[ext_resource type="Script" path="res://src/scenes/player.gd" id="1_k3ble"]
+[ext_resource type="Script" path="res://src/components/target_component.gd" id="2_8tivh"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ninfd"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_3gt43"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_eduni"]
+properties/0/path = NodePath(".:sync_trans")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("component_target") groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_k3ble")
+component_target = NodePath("TargetComponent")
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_ninfd")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_3gt43")
+
+[node name="TargetComponent" type="Node" parent="." node_paths=PackedStringArray("origin")]
+script = ExtResource("2_8tivh")
+origin = NodePath("..")
+
+[node name="CameraArm" type="SpringArm3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1, 0)
+spring_length = 3.0
+
+[node name="Camera3D" type="Camera3D" parent="CameraArm"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.1
+delta_interval = 0.1
+replication_config = SubResource("SceneReplicationConfig_eduni")
+
+[node name="NameLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+billboard = 1
+text = "Player's Name"
+font_size = 64
+outline_size = 24

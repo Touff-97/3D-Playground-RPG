@@ -1,0 +1,57 @@
+[gd_scene load_steps=8 format=3 uid="uid://bgqp78i747nb8"]
+
+[ext_resource type="PackedScene" uid="uid://cv8odgogakdvf" path="res://src/scenes/player.tscn" id="1_1c2ky"]
+[ext_resource type="Script" path="res://src/managers/scene_manager.gd" id="1_7wrun"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_58ara"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_o17vo"]
+sky_material = SubResource("ProceduralSkyMaterial_58ara")
+
+[sub_resource type="Environment" id="Environment_oygfx"]
+background_mode = 2
+sky = SubResource("Sky_o17vo")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i1qgr"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nc1rx"]
+albedo_color = Color(0.427451, 0.427451, 1, 1)
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_7wrun")
+player_scene = ExtResource("1_1c2ky")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_oygfx")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+light_color = Color(0.490196, 1, 0.490196, 1)
+shadow_enabled = true
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="Ground" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.358375, 0)
+
+[node name="Collider" type="CollisionShape3D" parent="Terrain/Ground"]
+shape = SubResource("BoxShape3D_i1qgr")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Terrain/Ground"]
+size = Vector3(100, 1, 100)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+size = Vector3(2, 2, 2)
+material = SubResource("StandardMaterial3D_nc1rx")
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://src/scenes/player.tscn")
+spawn_path = NodePath("../Players")

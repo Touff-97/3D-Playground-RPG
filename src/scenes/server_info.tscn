@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://c284p3pr2247q"]
+
+[ext_resource type="Script" path="res://src/scenes/server_info.gd" id="1_x4m8q"]
+
+[node name="ServerInfo" type="HBoxContainer" node_paths=PackedStringArray("info_title", "info_ip", "info_count")]
+size_flags_vertical = 0
+script = ExtResource("1_x4m8q")
+info_title = NodePath("Title")
+info_ip = NodePath("IP")
+info_count = NodePath("Count")
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Server Name"
+
+[node name="IP" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Server IP"
+
+[node name="Count" type="Label" parent="."]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Server Count"
+
+[node name="Join" type="Button" parent="."]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Join"
+
+[connection signal="pressed" from="Join" to="." method="_on_join_pressed"]
