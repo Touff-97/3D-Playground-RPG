@@ -1,7 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bgqp78i747nb8"]
+[gd_scene load_steps=16 format=3 uid="uid://bgqp78i747nb8"]
 
 [ext_resource type="PackedScene" uid="uid://cv8odgogakdvf" path="res://src/scenes/player.tscn" id="1_1c2ky"]
 [ext_resource type="Script" path="res://src/managers/scene_manager.gd" id="1_7wrun"]
+[ext_resource type="Texture2D" uid="uid://c8arnlq67qi7" path="res://src/textures/grids/Dark/texture_05.png" id="3_rodcp"]
+[ext_resource type="Texture2D" uid="uid://c8upf6osvdwx5" path="res://src/textures/grids/Orange/texture_05.png" id="4_lu8x8"]
+[ext_resource type="Texture2D" uid="uid://dqgbgrchvfwve" path="res://src/textures/grids/Green/texture_05.png" id="5_x6fhp"]
+[ext_resource type="Texture2D" uid="uid://bj2tjclvfiove" path="res://src/textures/grids/Purple/texture_05.png" id="6_727rs"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_58ara"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -14,13 +18,33 @@ sky_material = SubResource("ProceduralSkyMaterial_58ara")
 background_mode = 2
 sky = SubResource("Sky_o17vo")
 tonemap_mode = 2
+sdfgi_enabled = true
 glow_enabled = true
+fog_enabled = true
+fog_light_color = Color(1, 1, 1, 1)
+fog_density = 0.001
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i1qgr"]
-size = Vector3(100, 1, 100)
+size = Vector3(1000, 1, 1000)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nc1rx"]
-albedo_color = Color(0.427451, 0.427451, 1, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2up02"]
+albedo_texture = ExtResource("3_rodcp")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v505w"]
+albedo_texture = ExtResource("4_lu8x8")
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s2a3p"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eeqlq"]
+albedo_texture = ExtResource("5_x6fhp")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pg3nj"]
+albedo_texture = ExtResource("6_727rs")
+uv1_triplanar = true
 
 [node name="World" type="Node3D"]
 script = ExtResource("1_7wrun")
@@ -31,7 +55,6 @@ environment = SubResource("Environment_oygfx")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
-light_color = Color(0.490196, 1, 0.490196, 1)
 shadow_enabled = true
 
 [node name="Terrain" type="Node3D" parent="."]
@@ -43,12 +66,38 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.358375, 0)
 shape = SubResource("BoxShape3D_i1qgr")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Terrain/Ground"]
-size = Vector3(100, 1, 100)
+material_override = SubResource("StandardMaterial3D_2up02")
+size = Vector3(1000, 1, 1000)
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Terrain"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+[node name="Box1" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -3.81894, 1, -4)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Terrain/Box1"]
+material_override = SubResource("StandardMaterial3D_v505w")
 size = Vector3(2, 2, 2)
-material = SubResource("StandardMaterial3D_nc1rx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Box1"]
+shape = SubResource("BoxShape3D_s2a3p")
+
+[node name="Box2" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 4.68185, 1, -5.55463)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Terrain/Box2"]
+material_override = SubResource("StandardMaterial3D_eeqlq")
+size = Vector3(2, 2, 2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Box2"]
+shape = SubResource("BoxShape3D_s2a3p")
+
+[node name="Box3" type="StaticBody3D" parent="Terrain"]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 2.21231, 1, 5.49835)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="Terrain/Box3"]
+material_override = SubResource("StandardMaterial3D_pg3nj")
+size = Vector3(2, 2, 2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/Box3"]
+shape = SubResource("BoxShape3D_s2a3p")
 
 [node name="Players" type="Node3D" parent="."]
 
