@@ -8,6 +8,7 @@ extends MultiplayerSynchronizer
 @export var sensitivity : int = 5
 
 signal mouse_moved
+signal jump_toggled
 
 
 func _process(delta: float) -> void:
@@ -32,6 +33,7 @@ func _input(event: InputEvent) -> void:
 
 @rpc("call_local")
 func jump() -> void:
+	emit_signal("jump_toggled")
 	jumping = true
 
 

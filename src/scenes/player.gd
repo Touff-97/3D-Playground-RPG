@@ -1,92 +1,82 @@
 extends CharacterBody3D
 class_name Player
 
-const SPEED = 1.5
-const JUMP_VELOCITY = 4.5
-
-@onready var camera_arm: SpringArm3D = $CameraArm
-@onready var camera: Camera3D = $CameraArm/Camera3D
 @onready var name_label: Label3D = $NameLabel
+@onready var camera: Camera3D = $CameraArm/Camera3D
+@onready var camera_arm: SpringArm3D = $CameraArm
+@onready var animations: AnimationTree = $AnimationTree
 @onready var multiplayer_synchronizer: MultiplayerSynchronizer = $MultiplayerSynchronizer
-@onready var input_synchronizer: MultiplayerSynchronizer = $InputSynchronizer
-@onready var animation_tree: AnimationTree = $AnimationTree
-@onready var armature: Node3D = $Armature
 
-@export_group("Components", "component_")
-@export var component_target : TargetComponent
+@export_group("Settings")
+@export var move_speed : float = 1.5
+@export var sensitivity : int = 5
 
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
-var sync_trans := Transform3D.IDENTITY
-var sync_anim := Vector2.ZERO
-var direction := Vector3.ZERO
-var last_direction := 0.0
-var last_animation := Vector2.ZERO
-var boost : int = 1
-var last_boost : int = 1
+@export_group("Components")
+@export var input_component : InputComponent
+@export var state_machine: StateMachineComponent
+
+var direction : Vector3 = Vector3.ZERO
+var last_direction : float = 0.0
+var rotation_direction : Vector2 = Vector2.ZERO
+var boost : float = 1.0
+var move_animation : Vector2 = Vector2.ZERO 
+# Sync multiplayer
+var sync_trans : Transform3D = Transform3D.IDENTITY
+var sync_move_anim : Vector2= Vector2.ZERO
 
 
 func _ready() -> void:
 	set_multiplayer_authority(name.to_int())
-	set_process(get_multiplayer_authority() == multiplayer.get_unique_id())
+	multiplayer_synchronizer.set_multiplayer_authority(name.to_int())
 	camera.set_current(get_multiplayer_authority() == multiplayer.get_unique_id())
 	name_label.set_visible(get_multiplayer_authority() != multiplayer.get_unique_id())
-	multiplayer_synchronizer.set_multiplayer_authority(name.to_int())
 	
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	state_machine = get_node("StateMachine")
+	state_machine.init(self, animations, input_component)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		rotation_direction = (event.relative / 1000) * sensitivity
+		apply_rotation(rotation_direction)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	state_machine.process_input(event)
 
 
 func _physics_process(delta: float) -> void:
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
-		# Add the gravity.
-		if not is_on_floor():
-			velocity.y -= gravity * delta
-		
-		# Handle jump.
-		if input_synchronizer.jumping and is_on_floor():
-			velocity.y = JUMP_VELOCITY
-		
-		input_synchronizer.jumping = false
-		
-		if input_synchronizer.running:
-			boost = 2
-		else:
-			boost = 1
-		
-		# Get the input direction and handle the movement/deceleration.
-		direction = (transform.basis * Vector3(input_synchronizer.move_direction.x, 0, input_synchronizer.move_direction.y)).normalized()
-		
-		var lerp_animation = clamp(lerp(last_animation, input_synchronizer.move_direction * boost, 0.2), Vector2(-2, -2), Vector2(2, 2))
-		animation_tree.set("parameters/Movement/blend_position", lerp_animation)
-		last_animation = lerp_animation
+		var move_direction = input_component.get_movement_direction()
+		direction = (transform.basis * Vector3(move_direction.x, 0, move_direction.y)).normalized()
+	
+		state_machine.process_physics(delta)
 		
 		if direction:
 			camera_arm.rotation.y = lerp(camera_arm.rotation.y, 0.0, 0.05)
-			velocity.x = direction.x * SPEED * boost
-			velocity.z = direction.z * SPEED * boost
-			
 
-		else:
-			velocity.x = move_toward(velocity.x, 0, SPEED)
-			velocity.z = move_toward(velocity.z, 0, SPEED)
-
-		move_and_slide()
 		sync_trans = transform
-		sync_anim = lerp_animation
+		sync_move_anim = move_animation
 	else:
 		transform = transform.interpolate_with(sync_trans, 0.2)
-		animation_tree.set("parameters/Movement/blend_position", sync_anim)
+		animations.set("parameters/Movement/blend_position", sync_move_anim)
 
 
-func apply_rotation() -> void:
+func _process(delta: float) -> void:
+	state_machine.process_frame(delta)
+
+
+func apply_rotation(rotation_dir) -> void:
 	# Handle character rotation
-	var clamped_rot = camera_arm.rotation.x - input_synchronizer.rotation_direction.y
+	var clamped_rot = camera_arm.rotation.x - rotation_dir.y
 	clamped_rot = clamp(clamped_rot, -0.3334 * PI, 0.0778 * PI)
 	camera_arm.rotation.x = clamped_rot
 	
 	if direction:
-		var lerp_direction = lerp(last_direction, -input_synchronizer.rotation_direction.x, 0.05)
+		var lerp_direction = lerp(last_direction, -rotation_dir.x, 0.05)
 		rotate_y(lerp_direction)
 		last_direction = lerp_direction
 	
-	camera_arm.rotate_y(-input_synchronizer.rotation_direction.x)
+	camera_arm.rotate_y(-rotation_dir.x)
