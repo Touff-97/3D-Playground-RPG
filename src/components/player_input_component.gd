@@ -10,5 +10,9 @@ func wants_run() -> bool:
 	return Input.is_action_pressed("run")
 
 
+func wants_crouch() -> bool:
+	return Input.is_action_pressed("crouch")
+
+
 func wants_jump() -> bool:
 	return Input.is_action_just_pressed("jump")

@@ -2,6 +2,7 @@ extends CharacterBody3D
 class_name Player
 
 @onready var name_label: Label3D = $NameLabel
+@onready var state_label: Label3D = $StateLabel
 @onready var camera: Camera3D = $CameraArm/Camera3D
 @onready var camera_arm: SpringArm3D = $CameraArm
 @onready var animations: AnimationTree = $AnimationTree
@@ -15,11 +16,13 @@ class_name Player
 @export var input_component : InputComponent
 @export var state_machine: StateMachineComponent
 
+var move_direction : Vector2 = Vector2.ZERO
 var direction : Vector3 = Vector3.ZERO
 var last_direction : float = 0.0
 var rotation_direction : Vector2 = Vector2.ZERO
 var boost : float = 1.0
-var move_animation : Vector2 = Vector2.ZERO 
+var last_animation := Vector2.ZERO
+var move_animation : Vector2 = Vector2.ZERO
 # Sync multiplayer
 var sync_trans : Transform3D = Transform3D.IDENTITY
 var sync_move_anim : Vector2= Vector2.ZERO
@@ -49,16 +52,20 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
-		var move_direction = input_component.get_movement_direction()
 		direction = (transform.basis * Vector3(move_direction.x, 0, move_direction.y)).normalized()
-	
+		
 		state_machine.process_physics(delta)
+		
+		# Ensure smooth transition between movement animations of different states
+		var lerp_animation = clamp(lerp(last_animation, move_direction * boost, 0.2), Vector2(-2, -2), Vector2(2, 2))
+		animations.set("parameters/Movement/blend_position", lerp_animation)
+		last_animation = lerp_animation
 		
 		if direction:
 			camera_arm.rotation.y = lerp(camera_arm.rotation.y, 0.0, 0.05)
-
+		
 		sync_trans = transform
-		sync_move_anim = move_animation
+		sync_move_anim = lerp_animation
 	else:
 		transform = transform.interpolate_with(sync_trans, 0.2)
 		animations.set("parameters/Movement/blend_position", sync_move_anim)
@@ -79,4 +86,6 @@ func apply_rotation(rotation_dir) -> void:
 		rotate_y(lerp_direction)
 		last_direction = lerp_direction
 	
-	camera_arm.rotate_y(-rotation_dir.x)
+	var lerp_direction = lerp(last_direction, -rotation_dir.x, 0.075)
+	camera_arm.rotate_y(lerp_direction)
+	last_direction = lerp_direction

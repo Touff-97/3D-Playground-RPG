@@ -10,5 +10,9 @@ func wants_run() -> bool:
 	return false
 
 
+func wants_crouch() -> bool:
+	return false
+
+
 func wants_jump() -> bool:
 	return false

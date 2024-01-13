@@ -11,8 +11,9 @@ var input : InputComponent
 
 
 func enter() -> void:
+	parent.state_label.text = name
 	if animation_condition != "":
-		animations.set("parameters/playback/%s" % animation_condition, true)
+		animations.set("parameters/conditions/%s" % animation_condition, true)
 
 
 func exit() -> void:
@@ -39,5 +40,13 @@ func get_run() -> bool:
 	return input.wants_run()
 
 
+func get_crouch() -> bool:
+	return input.wants_crouch()
+
+
 func get_jump() -> bool:
 	return input.wants_jump()
+
+
+func setup_jump() -> void:
+	pass

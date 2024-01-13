@@ -9,14 +9,12 @@ class_name JumpStateComponent
 @export_group("Jump", "jump_")
 @export var jump_force : float = 4.5
 
-
-func enter() -> void:
-	super()
-	parent.velocity.y = jump_force
+var jumped : bool = false
 
 
 func exit() -> void:
-	animations.set("parameters/playback/%s" % animation_condition, false)
+	animations.set("parameters/conditions/%s" % animation_condition, false)
+	jumped = false
 
 
 func process_physics(delta: float) -> StateComponent:
@@ -29,7 +27,8 @@ func process_physics(delta: float) -> StateComponent:
 	
 	parent.move_and_slide()
 	
-	if parent.is_on_floor():
+	if parent.is_on_floor() and jumped:
+		print("Has jumped and landed")
 		if parent.direction:
 			if get_run():
 				return run_state
@@ -37,3 +36,10 @@ func process_physics(delta: float) -> StateComponent:
 		return idle_state
 	
 	return null
+
+
+func jump() -> void:
+	if not jumped:
+		print("Jumped")
+		parent.velocity.y = jump_force
+		jumped = true
