@@ -22,3 +22,41 @@ A playground of all things 3D Multiplayer RPG.
 * Resources and enemies
 * Resource gathering and enemy attacking
 * Concurrent state machines for movement, tool / weapon use, etc
+
+<h2>Locations</h2>
+
+A list of known locations throughout the world to start blocking out the level.
+
+<h3>The Plateau</h3>
+
+* Cloud's Expanse
+* The Torn Peak
+* The Meadows
+* Drained Spot
+* The City
+* Moat Valley
+* The Bridge
+* The Hole
+
+<h3>City</h3>
+
+* Inns
+* Guild Halls
+* Training Grounds
+* The Grand Colosseum
+* Duel Colosseums
+* Military Service
+* The Library
+* The Cathedral
+* The Sewers
+* Central District
+* Slums
+
+<h3>The Hole</h3>
+
+* Digger's District
+* The Barracks
+* The Cargo lift
+* The Cargo Yard
+* The Caves
+* The Frontlines
