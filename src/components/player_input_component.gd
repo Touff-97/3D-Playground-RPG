@@ -1,6 +1,13 @@
 extends InputComponent
 class_name PlayerInputComponent
 
+signal mouse_moved(event)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		emit_signal("mouse_moved", event)
+
 
 func get_movement_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_forward", "move_backward")

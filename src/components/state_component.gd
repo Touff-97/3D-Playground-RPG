@@ -12,12 +12,11 @@ var input : InputComponent
 
 func enter() -> void:
 	parent.state_label.text = name
-	if animation_condition != "":
-		animations.set("parameters/conditions/%s" % animation_condition, true)
+	animations.set("parameters/conditions/%s" % animation_condition, true)
 
 
 func exit() -> void:
-	pass
+	animations.set("parameters/conditions/%s" % animation_condition, false)
 
 
 func process_input(event: InputEvent) -> StateComponent:

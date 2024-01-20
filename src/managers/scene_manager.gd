@@ -1,6 +1,7 @@
 extends Node
 
 @export var player_scene : PackedScene
+@export var player_dummy_scene : PackedScene
 
 @onready var players: Node3D = $Players
 
