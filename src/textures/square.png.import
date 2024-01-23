@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0rbj02fx21ld"
-path.s3tc="res://.godot/imported/texture_07.png-3fb6578d08a0f9d3e31f49f0ebd27c16.s3tc.ctex"
+uid="uid://bm7ynpugij8ub"
+path.s3tc="res://.godot/imported/square.png-4f5ff0020421215467d6a3d35286aa6b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://src/textures/grids/Light/texture_07.png"
-dest_files=["res://.godot/imported/texture_07.png-3fb6578d08a0f9d3e31f49f0ebd27c16.s3tc.ctex"]
+source_file="res://src/textures/square.png"
+dest_files=["res://.godot/imported/square.png-4f5ff0020421215467d6a3d35286aa6b.s3tc.ctex"]
 
 [params]
 

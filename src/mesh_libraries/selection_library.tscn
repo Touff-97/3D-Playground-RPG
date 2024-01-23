@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://8pcvjpd1xne7"]
+
+[ext_resource type="PackedScene" uid="uid://bre3oqaoj63l" path="res://src/scenes/mesh_library.tscn" id="1_28oow"]
+[ext_resource type="Texture2D" uid="uid://bm7ynpugij8ub" path="res://src/textures/square.png" id="2_dspia"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pfewk"]
+transparency = 1
+albedo_texture = ExtResource("2_dspia")
+
+[sub_resource type="QuadMesh" id="QuadMesh_pt1jm"]
+material = SubResource("StandardMaterial3D_pfewk")
+size = Vector2(1.25, 1.25)
+
+[node name="SelectionLibrary" instance=ExtResource("1_28oow")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.5, 0, -0.5)
+mesh = SubResource("QuadMesh_pt1jm")

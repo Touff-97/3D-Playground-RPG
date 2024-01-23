@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://cm6x220hxfhpc"]
+
+[ext_resource type="Texture2D" uid="uid://blmpvl1vrvyc" path="res://icon.svg" id="1_sbljg"]
+[ext_resource type="Script" path="res://src/scenes/level_editor_item.gd" id="1_w85hl"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rpjdd"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 10
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="Item" type="Panel" node_paths=PackedStringArray("texture")]
+custom_minimum_size = Vector2(90, 90)
+offset_right = 90.0
+offset_bottom = 90.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_rpjdd")
+script = ExtResource("1_w85hl")
+texture = NodePath("Texture")
+
+[node name="Texture" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 14.0
+offset_right = 80.0
+offset_bottom = 84.0
+pivot_offset = Vector2(35, 35)
+mouse_default_cursor_shape = 2
+texture_normal = ExtResource("1_sbljg")
+ignore_texture_size = true
+stretch_mode = 4
+
+[connection signal="button_down" from="Texture" to="." method="_on_texture_button_down"]
+[connection signal="button_up" from="Texture" to="." method="_on_texture_button_up"]
+[connection signal="mouse_entered" from="Texture" to="." method="_on_texture_mouse_entered"]
+[connection signal="mouse_exited" from="Texture" to="." method="_on_texture_mouse_exited"]
+[connection signal="pressed" from="Texture" to="." method="_on_item_pressed"]
