@@ -5,14 +5,15 @@ const ITEM = preload("res://src/scenes/level_editor_item.tscn")
 @export var libraries : Array[MeshLibrary]
 @export var selected_library : MeshLibrary
 @export var selected_tile : int = -1
+@export var tile_orientations : Array[int] = [0, 16, 10, 22]
 
-@onready var editor_view: Camera3D = $EditorView
+@onready var editor_view: Camera3D = $ViewPivot/EditorView
 @onready var interactible_zone_panel: Panel = $EditorUI/VBox/InteractibleZonePanel
 @onready var category: ScrollContainer = $EditorUI/VBox/TopPanel/Margin/HBox/Category
 @onready var category_items: HBoxContainer = $EditorUI/VBox/TopPanel/Margin/HBox/Category/Items
 @onready var tiles: ScrollContainer = $EditorUI/VBox/TopPanel/Margin/HBox/Tiles
 @onready var tile_items: HBoxContainer = $EditorUI/VBox/TopPanel/Margin/HBox/Tiles/Items
-@onready var tile_preview: TextureRect = $EditorUI/TilePreview
+@onready var tile_preview: MeshInstance3D = $EditorUI/TilePreview
 
 var can_interact : bool = false
 
@@ -22,23 +23,49 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and selected_tile != -1:
-		get_grid_coordinates()
-		update_preview(event.position)
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.is_pressed() and can_interact:
-			place_tile()
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.is_pressed() and can_interact:
-			remove_tile()
+	if can_interact:
+		if event is InputEventMouseMotion and selected_tile != -1:
+			if event.is_action_pressed("stepped"):
+				update_preview(true)
+			else:
+				update_preview(false)
+		
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+			while event.is_pressed():
+				place_tile()
+		
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.is_pressed():
+				remove_tile()
+		
+		if event.is_action_pressed("rotate_tile") and selected_tile != -1:
+			var temp = tile_orientations.pop_front()
+			tile_orientations.append(temp)
+			tile_preview.rotate_y(PI / 2)
+		
+		if event.is_action_pressed("level_up"):
+			editor_view.position.y += 1
+		
+		if event.is_action_pressed("level_down"):
+			editor_view.position.y -= 1
+	else:
+		tile_preview.mesh = null
 
 
-func update_preview(pos: Vector2) -> void:
-	var preview = selected_library.get_item_preview(selected_tile)
-	tile_preview.texture = preview
-	tile_preview.position = pos - (preview.get_size() / 2)
+func update_preview(stepped: bool) -> void:
+	var preview = selected_library.get_item_mesh(selected_tile)
+	var preview_pos : Vector3
+	
+	if stepped:
+		print("stepped")
+		preview_pos = get_grid_coordinates()
+		tile_preview.position = Vector3(preview_pos.x, preview_pos.y + 0.05, preview_pos.z) + \
+								(preview.get_aabb().size / 2)
+	else:
+		preview_pos = screen_point_to_ray()["position"]
+		tile_preview.position = Vector3(preview_pos.x, preview_pos.y + 0.05, preview_pos.z)
+	
+	tile_preview.mesh = preview
 
 
 func populate_categories() -> void:
@@ -58,7 +85,6 @@ func clear_categories() -> void:
 
 
 func _on_category_selected(library: MeshLibrary) -> void:
-	print("Selected library")
 	category.hide()
 	#clear_categories() # Reset the category tab
 	selected_library = mesh_library
@@ -83,10 +109,12 @@ func _on_tile_selected(id: int) -> void:
 
 
 func place_tile() -> void:
-	var grid_coords := get_grid_coordinates()
-	print(grid_coords)
 	if selected_tile != -1:
-		set_cell_item(grid_coords, selected_tile)
+		var grid_coords := get_grid_coordinates()
+		var tween := get_tree().create_tween()
+		#tween.tween_property(tile_preview, "scale", Vector3(0.9, 0.9, 0.9), 0.1)
+		#tween.tween_property(tile_preview, "scale", Vector3(1.0, 1.0, 1.0), 0.1)
+		set_cell_item(grid_coords, selected_tile, tile_orientations[0])
 
 
 func remove_tile() -> void:
@@ -98,15 +126,14 @@ func get_grid_coordinates() -> Vector3:
 	var global_coords : Vector3 = get_global_coordinates()
 	var local_coords : Vector3 = to_local(global_coords)
 	
-	print(local_to_map(local_coords))
 	return local_to_map(local_coords)
 
 
 func get_global_coordinates() -> Vector3:
-	return raycast_from_camera()["position"]
+	return screen_point_to_ray()["position"]
 
 
-func raycast_from_camera() -> Dictionary:
+func screen_point_to_ray() -> Dictionary:
 	var mouse_pos = get_viewport().get_mouse_position()
 	var ray_length = 100
 	var from = editor_view.project_ray_origin(mouse_pos)

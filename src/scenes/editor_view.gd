@@ -1,7 +1,11 @@
 extends Camera3D
 
 var prev_pos : Vector2 = Vector2.ZERO
-var can_pan : bool = false
+var can_pan : bool = false:
+	set(new_value):
+		can_pan = new_value
+		
+		print(can_pan)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -12,6 +16,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			can_pan = true
 		else:
 			can_pan = false
+	
 	elif event is InputEventMouseMotion and can_pan:
 		get_viewport().set_input_as_handled()
 		position = Vector3(prev_pos.x - event.position.x, 0, prev_pos.y - event.position.y)

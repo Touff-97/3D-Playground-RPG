@@ -10,7 +10,6 @@ extends Control
 @export_group("Level", "level_")
 @export var level_world : Node3D
 
-@onready var main_menu: MarginContainer = $MainMenu
 @onready var multiplayer_menu: MarginContainer = $MultiplayerMenu
 @onready var server_browser: Control = $MultiplayerMenu/VBox/ServerBrowser
 @onready var queue_popup: PopupPanel = $QueuePopup
@@ -31,6 +30,12 @@ func _ready() -> void:
 		print("Is dedicated server")
 		host_game()
 		server_browser.setup_broadcast("%s's Server" % client_name)
+
+
+func launch_singleplayer() -> void:
+	host_game()
+	send_player_information(client_name, 1)
+	rpc("start_game")
 
 
 # Player connection functions that run on all clients
@@ -71,39 +76,6 @@ func _on_client_name_text_changed(new_text: String) -> void:
 	client_name = new_text
 
 
-### MAIN MENU ###
-func _on_singleplayer_mode_pressed() -> void:
-	print("Singleplayer button down")
-	host_game()
-	send_player_information(client_name, 1)
-	rpc("start_game")
-	
-	# If you want to open up this session to multiplayer, you have to:
-	# 1. Start broadcasting the server
-	# 2. Set server_is_started to true
-
-
-func _on_multiplayer_mode_pressed() -> void:
-	main_menu.hide()
-	multiplayer_menu.show()
-
-
-func _on_create_mode_pressed() -> void:
-	# TODO:
-	# 1. Start the level editor tool
-	# 1.a. Will it be local or multiplayer connection?
-	# 1.b. Hide menu, show world select window (world is a collection of levels)
-	# 1.c. Select existing world or create new world
-	# 2. Let player build
-	# 2.a. On world, show UI to place down tiles, entities and events
-	# 3. Let player save the level
-	# 4. Let the player playtest
-	# 4.a. Seamlessly allow to play the scene and go back to build mode
-	# 5. Let the player finalize the build, then play it on singleplayer or share it
-	pass
-
-
-### MULTIPLAYER MODE ###
 func _on_host_button_down() -> void:
 	print("Host button down")
 	host_game()

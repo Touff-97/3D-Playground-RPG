@@ -1,0 +1,93 @@
+[gd_scene load_steps=4 format=3 uid="uid://x8aegq5jdfby"]
+
+[ext_resource type="Script" path="res://src/scenes/main.gd" id="1_joo5w"]
+[ext_resource type="Script" path="res://src/scenes/main_menu.gd" id="1_m76nk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_035jo"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 1102.0
+offset_bottom = 598.0
+script = ExtResource("1_joo5w")
+
+[node name="MainMenu" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+script = ExtResource("1_m76nk")
+
+[node name="VBox" type="VBoxContainer" parent="MainMenu"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="SingleplayerMode" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0, 0.6, 0.0509804, 1)
+theme_override_colors/font_hover_color = Color(0, 0.85098, 0.0705882, 1)
+theme_override_colors/font_focus_color = Color(0.729412, 1, 0.752941, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0.7, 0.0583333, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.466667, 0.466667, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_035jo")
+text = "SINGLEPLAYER"
+flat = true
+
+[node name="MultiplayerMode" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0, 0.3, 0.6, 1)
+theme_override_colors/font_hover_color = Color(0, 0.423529, 0.85098, 1)
+theme_override_colors/font_focus_color = Color(0.73, 0.865, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(0, 0.34902, 0.701961, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.466667, 0.466667, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_035jo")
+text = "MULTIPLAYER"
+flat = true
+
+[node name="CreateMode" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.55, 0, 0.6, 1)
+theme_override_colors/font_hover_color = Color(0.779167, 0, 0.85, 1)
+theme_override_colors/font_focus_color = Color(0.9775, 0.73, 1, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.641667, 0, 0.7, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.466667, 0.466667, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_035jo")
+text = "CREATE"
+flat = true
+
+[node name="Exit" type="Button" parent="MainMenu/VBox"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.6, 0.21, 0, 1)
+theme_override_colors/font_hover_color = Color(0.85, 0.2975, 0, 1)
+theme_override_colors/font_focus_color = Color(1, 0.8245, 0.73, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.7, 0.245, 0, 1)
+theme_override_colors/font_disabled_color = Color(0.466667, 0.466667, 0.466667, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_035jo")
+text = "EXIT"
+flat = true
+
+[node name="Mode" type="Node" parent="."]
+
+[connection signal="creator_mode_selected" from="MainMenu" to="." method="_on_creator_mode_selected"]
+[connection signal="multiplayer_mode_selected" from="MainMenu" to="." method="_on_multiplayer_mode_selected"]
+[connection signal="singleplayer_mode_selected" from="MainMenu" to="." method="_on_singleplayer_mode_selected"]
+[connection signal="pressed" from="MainMenu/VBox/SingleplayerMode" to="MainMenu" method="_on_singleplayer_mode_pressed"]
+[connection signal="pressed" from="MainMenu/VBox/MultiplayerMode" to="MainMenu" method="_on_multiplayer_mode_pressed"]
+[connection signal="pressed" from="MainMenu/VBox/CreateMode" to="MainMenu" method="_on_create_mode_pressed"]
