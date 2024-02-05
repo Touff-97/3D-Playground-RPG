@@ -28,10 +28,10 @@ func _input(event: InputEvent) -> void:
 			if event.is_action_pressed("stepped"):
 				update_preview(true)
 			else:
-				update_preview(false)
+				update_preview(true)
 		
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-			while event.is_pressed():
+			if event.is_pressed():
 				place_tile()
 		
 		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
@@ -77,21 +77,6 @@ func populate_categories() -> void:
 		new_item.category_selected.connect(_on_category_selected)
 
 
-func clear_categories() -> void:
-	for i in category_items.get_children():
-		i.category_selected.disconnect(_on_category_selected)
-		remove_child(i)
-		i.queue_free()
-
-
-func _on_category_selected(library: MeshLibrary) -> void:
-	category.hide()
-	#clear_categories() # Reset the category tab
-	selected_library = mesh_library
-	
-	populate_tiles(library)
-
-
 func populate_tiles(library: MeshLibrary) -> void:
 	tiles.show()
 	
@@ -104,14 +89,40 @@ func populate_tiles(library: MeshLibrary) -> void:
 		new_item.tile_selected.connect(_on_tile_selected)
 
 
+func _on_category_selected(library: MeshLibrary) -> void:
+	category.hide()
+	
+	clear_categories() # Reset the category tab
+	
+	selected_library = library
+	mesh_library = selected_library
+	
+	populate_tiles(library)
+
+
 func _on_tile_selected(id: int) -> void:
 	selected_tile = id
+
+
+func clear_categories() -> void:
+	for i in category_items.get_children():
+		i.category_selected.disconnect(_on_category_selected)
+		remove_child(i)
+		i.queue_free()
+
+
+func clear_tiles() -> void:
+	for i in tile_items.get_children():
+		i.tile_selected.disconnect(_on_tile_selected)
+		remove_child(i)
+		i.queue_free()
 
 
 func place_tile() -> void:
 	if selected_tile != -1:
 		var grid_coords := get_grid_coordinates()
-		var tween := get_tree().create_tween()
+		print(grid_coords)
+		#var tween := get_tree().create_tween()
 		#tween.tween_property(tile_preview, "scale", Vector3(0.9, 0.9, 0.9), 0.1)
 		#tween.tween_property(tile_preview, "scale", Vector3(1.0, 1.0, 1.0), 0.1)
 		set_cell_item(grid_coords, selected_tile, tile_orientations[0])
@@ -157,3 +168,14 @@ func _on_ui_panel_mouse_entered() -> void:
 
 func _on_ui_panel_mouse_exited() -> void:
 	can_interact = false
+
+
+func _on_back_button_pressed() -> void:
+	tiles.hide()
+	clear_tiles()
+	
+	selected_library = null
+	
+	populate_categories()
+	category.show()
+	
